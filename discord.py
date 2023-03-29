@@ -7,7 +7,6 @@ import re
 import sys
 import signal
 
-user = ""
 
 # server connection
 host_ip = input("Please enter the host IP.\n(if you used it in local, press 1)\n> ")
@@ -85,16 +84,17 @@ def entry_check(entry):
 
 
 # login
-
 def login(mail, password, frame):
     result = client.send_login(mail, password)
     result = json.loads(result)
     if result["status"] == "ok":
         frame.destroy()
         home()
-        client.getUserID(mail)
+        user = (client.getUserID("a"))
+        user = user.replace('[', '').replace(']', '')
     else:
         pass
+
 
 def create_account(frame):
 
@@ -224,6 +224,7 @@ def on_close():
     print("close")
 
 
+user = ""
 
 root.protocol("WM_DELETE_WINDOW", on_close)
 signal.signal(signal.SIGINT, signal_handler)

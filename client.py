@@ -38,6 +38,7 @@ class Client:
         response = self.client_socket.recv(1024)
         return response.decode("utf8")
 
+
     def create_canal(self, usernameA, usernameB):
         discussion_data = {
             "type": "canal",
@@ -103,8 +104,10 @@ class Client:
         data = self.client_socket.recv(1024)
         return data.decode("utf8")
 
+
     def close(self):
         self.client_socket.close()
+
 
     def getUserID(self, mail):
         userID_data = {
@@ -116,3 +119,12 @@ class Client:
         self.client_socket.send(msg)
         response = self.client_socket.recv(1024)
         return response.decode("utf8")
+    
+client = Client("localhost")
+
+"""
+check = (client.getUserID("a"))
+print(check)
+check = check.replace('[', '').replace(']', '')
+print(check)
+"""

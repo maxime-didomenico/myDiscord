@@ -98,8 +98,8 @@ class Server:
             if data["type"] == "userID":
                 mail = data["mail"]
                 print(f"userID: {mail}")
-                response_data=self.link.get_userID(mail)
-                response_msg=json.dumps(response_data).encode('utf-8')
+                response_data = self.link.getUserID(mail)
+                response_msg = json.dumps(response_data).encode('utf-8')
                 conn.sendall(response_msg)
 
 
