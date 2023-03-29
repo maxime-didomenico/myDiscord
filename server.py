@@ -81,24 +81,37 @@ class Server:
 
             if data["type"] == "message":
                 content=data["content"]
-                username = data["username"]
+                date=data["date"]
+                time=data["time"]
+                userID=data["userID"]
+                channelID=data["channelID"]
                 print(f"Message: {content}")
-                response_data={"status":"ok"}
+                response_data=self.link.create_message(content, date, time, userID, channelID)
                 response_msg=json.dumps(response_data).encode('utf-8')
                 conn.sendall(response_msg)
-                self.send_message(username, content)
+
 
             if data["type"] == "history":
-                discussionID = data["discussionID"]
-                #print(f"History: {usernameA} {usernameB}")
-                response_data=self.send_discussion(discussionID)
+                channelID = data["channelID"]
+                print(f"History of the channel: {channelID}")
+                response_data=self.link.get_messages(channelID)
                 response_msg=json.dumps(response_data).encode('utf-8')
                 conn.sendall(response_msg)
+
 
             if data["type"] == "userID":
                 mail = data["mail"]
-                print(f"userID: {mail}")
+                print(f"user mail: {mail}")
                 response_data = self.link.getUserID(mail)
+                response_msg = json.dumps(response_data).encode('utf-8')
+                conn.sendall(response_msg)
+
+            
+            if data["type"] == "channelID":
+                userA = data["userA"]
+                userB = data["userB"]
+                print(f"channel between: {userA} {userB}")
+                response_data = self.link.get_channelID(userA, userB)
                 response_msg = json.dumps(response_data).encode('utf-8')
                 conn.sendall(response_msg)
 
@@ -119,11 +132,11 @@ class Server:
             return False
     
 
-    def send_message(self, text, username,id_canal):
+    def send_message(self, text, username,id_channel):
         date = time.strftime("%d/%m/%Y")
         hour = time.strftime("%H:%M:%S")
         try :
-            self.link.create_message(text, username, date, hour, id_canal)
+            self.link.create_message(text, username, date, hour, id_channel)
 
         except :
             return False

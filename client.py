@@ -1,5 +1,6 @@
 import json
 import socket
+from datetime import datetime
 
 class Client:
 
@@ -39,9 +40,9 @@ class Client:
         return response.decode("utf8")
 
 
-    def create_canal(self, usernameA, usernameB):
+    def create_channel(self, usernameA, usernameB):
         discussion_data = {
-            "type": "canal",
+            "type": "channel",
             "usernameA": usernameA,
             "usernameB": usernameB
         }
@@ -49,12 +50,24 @@ class Client:
         msg = msg.encode("utf8")
         self.client_socket.send(msg)
 
+    def get_channelID(self, usernameA, usernameB):
+        channelID_data = {
+            "type": "channelID",
+            "usernameA": usernameA,
+            "usernameB": usernameB
+        }
+        msg = json.dumps(channelID_data)
+        msg = msg.encode("utf8")
+        self.client_socket.send(msg)
+        response = self.client_socket.recv(1024)
+        return response.decode("utf8")
+
 
     def askForHistory(self, usernameA, usernameB):
-        discussionID = self.discussionID(usernameA, usernameB)
+        channelID = self.channelID(usernameA, usernameB)
         history_data = {
             "type": "history",
-            "discussionID": discussionID
+            "channelID": channelID
         }
         msg = json.dumps(history_data)
         msg = msg.encode("utf8")
@@ -63,21 +76,17 @@ class Client:
         return response.decode("utf8")
 
 
-    def readHistory(self):
-        data = self.client_socket.recv(1024)
-        data = data.decode("utf8")
-        data = json.loads(data)
-        print(data)
-
-
-    def send_message(self, username, content):
+    def send_message(self, userID, content, channelID):
         if len(content) <= 0:
             return print("Message cannot be empty !")
         else :
             message_data = {
                 "type": "message",
-                "username": username,
-                "content": content
+                "content": content,
+                "date": datetime.now().strftime("%d/%m/%Y"),
+                "time": datetime.now().strftime("%H:%M:%S"),
+                "userID": userID,
+                "channelID": channelID
             }
             msg = json.dumps(message_data)
             msg = msg.encode("utf8")
@@ -122,7 +131,9 @@ class Client:
     
 client = Client("localhost")
 
+
 """
+print(client.send_message(1, "Hello", 1))
 check = (client.getUserID("a"))
 print(check)
 check = check.replace('[', '').replace(']', '')

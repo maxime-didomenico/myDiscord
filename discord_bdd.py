@@ -23,18 +23,26 @@ class Discord_bdd:
         return id
 
 
-    def get_messages(self, id_canal):
-        query = "SELECT * FROM messages WHERE id_canal = %s ORDER BY date_envoi DESC, heure_envoi DESC"
-        self.cursor.execute(query, (id_canal,))
+    def get_messages(self, id_channel):
+        query = "SELECT * FROM messages WHERE id_channel = %s ORDER BY date_envoi DESC, heure_envoi DESC"
+        self.cursor.execute(query, (id_channel,))
         messages = self.cursor.fetchall()
         return messages
+    
+    def get_channelID(self, usernameA, usernameB):
+        query = "SELECT id_channel FROM canaux WHERE id_utilisateur1 = %s AND id_utilisateur2 = %s"
+        self.cursor.execute(query, (usernameA, usernameB))
+        id = self.cursor.fetchone()
+        return id
 
 
-    def create_message(self, text,date,hour,id_user, id_canal):
-        self.cursor.execute("INSERT INTO Messages (text,date_envoi,heure_envoi, id_utilisateur, id_canal) "
+    def create_message(self, text,date,hour,id_user, id_channel):
+        self.cursor.execute("INSERT INTO Messages (text,date_envoi,heure_envoi, id_utilisateur, id_channel) "
                             "VALUES (%s, %s, %s, %s, %s)",
-                            (text, date, hour,id_user, id_canal))
+                            (text, date, hour,id_user, id_channel))
         self.connection.commit()
+        test = "message send"
+        return test
 
 
     def create_user(self, f_name, name, email, mdp):
@@ -44,7 +52,7 @@ class Discord_bdd:
         print(self.connection.commit())
 
 
-    def create_canal(self, userA, userB):
+    def create_channel(self, userA, userB):
         self.cursor.execute("INSERT INTO Canaux (id_utilisateur1, id_utilisateur2) VALUES (%s, %s)", (userA, userB))
         self.connection.commit()
 
