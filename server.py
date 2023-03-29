@@ -1,17 +1,22 @@
+from discord_bdd import Discord_bdd 
+from threading import Thread
 import json
 import socket
-from link import *
-from threading import Thread
+import time
+import getpass
 
 class Server:
 
-    def __init__(self, host='', port=5566):
-        #self.link = Speaker()
+    def __init__(self, host, port=5566):
+        self.clients = []
         self.host = host
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((host, port))
+        self.password = getpass.getpass("MySQL Password: \n> ")
+        self.link = Discord_bdd("root", self.password, "discord")
         print("Connection is started !")
+        self.start()
 
 
     def start(self):
@@ -22,14 +27,18 @@ class Server:
             print("Client connected.")
             print(f"Accepted connection from {address}")
 
+            self.clients.append(conn)
+
             client_thread = Thread(target=self.handle_client_connection, args=(conn,))
             client_thread.start()
 
 
     def handle_client_connection(self, conn):
         while True:
+            print(self.clients)
             data = conn.recv(1024)
             if not data:
+                self.clients.remove(conn)
                 break
 
 
@@ -41,7 +50,10 @@ class Server:
                 username = data["username"]
                 password = data["password"]
                 print(f"Try to login: {username}")
-                if self.check_login(username, password):
+                print(f"mdp: {password}")
+                result = self.link.check_login(username, password)
+                print(result)
+                if result:
                     response_data={"status":"ok"}
                     response_msg=json.dumps(response_data).encode('utf-8')
                     conn.sendall(response_msg)
@@ -49,20 +61,22 @@ class Server:
                     response_data={"status":"error"}
                     response_msg=json.dumps(response_data).encode('utf-8')
                     conn.sendall(response_msg)
+                print(response_data)
 
             if data["type"] == "signin":
-                username = data["username"]
+                name = data["name"]
+                f_name = data["f_name"]
                 password = data["password"]
                 mail = data["mail"]
-                print(f"Try to sign in: {username}")
-                if self.sign_in(username, password, mail):
+                print(f"Try to sign in: {name}")
+                if self.link.create_user(f_name,name, mail, password):
                     response_data={"status":"ok"}
                     response_msg=json.dumps(response_data).encode('utf-8')
-                    conn.sendall(response_msg)
+                    self.server_socket.sendall(response_msg)
                 else:
                     response_data={"status":"error"}
                     response_msg=json.dumps(response_data).encode('utf-8')
-                    conn.sendall(response_msg)
+                    self.server_socket.sendall(response_msg)
 
 
             if data["type"] == "message":
@@ -81,8 +95,6 @@ class Server:
                 response_msg=json.dumps(response_data).encode('utf-8')
                 conn.sendall(response_msg)
 
-            print("Client disconnected.")
-
 
     def check_login(self, username, password):
         try :
@@ -100,9 +112,18 @@ class Server:
             return False
     
 
-    def send_message(self, username, content):
+    def send_message(self, text, username,id_canal):
+        date = time.strftime("%d/%m/%Y")
+        hour = time.strftime("%H:%M:%S")
         try :
-            self.link.send_message(username, content)
+            self.link.create_message(text, username, date, hour, id_canal)
+
+        except :
+            return False
+
+    def delete_message(self, id_message):
+        try :
+            self.link.delete_message(id_message)
 
         except :
             return False
@@ -115,6 +136,8 @@ class Server:
         except :
             return False
 
+host_ip = input("Please enter the host IP.\n(if you used it in local, press 1)\n> ")
+if host_ip == "1":
+    host_ip = "localhost"
 
-server = Server()
-server.start()
+server = Server(host_ip)
