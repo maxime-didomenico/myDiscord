@@ -105,3 +105,14 @@ class Client:
 
     def close(self):
         self.client_socket.close()
+
+    def getUserID(self, mail):
+        userID_data = {
+            "type": "userID",
+            "mail": mail
+        }
+        msg = json.dumps(userID_data)
+        msg = msg.encode("utf8")
+        self.client_socket.send(msg)
+        response = self.client_socket.recv(1024)
+        return response.decode("utf8")

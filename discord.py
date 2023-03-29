@@ -7,10 +7,13 @@ import re
 import sys
 import signal
 
+user = ""
+
 # server connection
 host_ip = input("Please enter the host IP.\n(if you used it in local, press 1)\n> ")
 if host_ip == "1":
     host_ip = "localhost"
+
 client = Client(host_ip)
 
 root = tk.Tk()
@@ -89,6 +92,7 @@ def login(mail, password, frame):
     if result["status"] == "ok":
         frame.destroy()
         home()
+        client.getUserID(mail)
     else:
         pass
 

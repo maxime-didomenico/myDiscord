@@ -41,28 +41,6 @@ LOCK TABLES `canaux` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `membres`
---
-
-DROP TABLE IF EXISTS `membres`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `membres` (
-  `id_utilisateur` varchar(255) DEFAULT NULL,
-  `date_joined` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `membres`
---
-
-LOCK TABLES `membres` WRITE;
-/*!40000 ALTER TABLE `membres` DISABLE KEYS */;
-/*!40000 ALTER TABLE `membres` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `messages`
 --
 
@@ -112,7 +90,7 @@ CREATE TABLE `utilisateurs` (
 
 LOCK TABLES `utilisateurs` WRITE;
 /*!40000 ALTER TABLE `utilisateurs` DISABLE KEYS */;
-INSERT INTO `utilisateurs` VALUES (1,'a','a','a','a');
+INSERT INTO `utilisateurs` VALUES (1,'a','a','a','a'),(2,'a','a','a','a'),(3,'a','a','a','a');
 /*!40000 ALTER TABLE `utilisateurs` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -125,4 +103,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-03-29 14:02:10
+-- Dump completed on 2023-03-29 14:29:18

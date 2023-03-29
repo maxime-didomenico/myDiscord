@@ -1,4 +1,4 @@
-from discord_bdd import Discord_bdd 
+from discord_bdd import Discord_bdd
 from threading import Thread
 import json
 import socket
@@ -95,6 +95,13 @@ class Server:
                 response_msg=json.dumps(response_data).encode('utf-8')
                 conn.sendall(response_msg)
 
+            if data["type"] == "userID":
+                mail = data["mail"]
+                print(f"userID: {mail}")
+                response_data=self.link.get_userID(mail)
+                response_msg=json.dumps(response_data).encode('utf-8')
+                conn.sendall(response_msg)
+
 
     def check_login(self, username, password):
         try :
@@ -132,6 +139,13 @@ class Server:
     def send_discussion(self, discussionID):
         try :
             self.link.send_discussion(discussionID)
+
+        except :
+            return False
+        
+    def getUserID(self, mail):
+        try :
+            self.link.getUserID(mail)
 
         except :
             return False
